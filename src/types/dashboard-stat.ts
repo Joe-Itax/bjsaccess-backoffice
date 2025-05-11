@@ -1,11 +1,15 @@
 export interface DashboardStats {
-  totalCanteenStudents: number;
-  totalRevenue: number;
-  revenueGrowthRate: number;
-  newCanteenStudentsThisMonth: number;
-  growthRate: number;
-  expiredAbonnements: number;
-  mealsThisMonth: number;
-  abonnementRate: number;
-  mealsGraphData: { date: string; total: number }[];
+  totalPosts: number;
+  publishedPosts: number;
+  draftPosts: number;
+  newPostsThisMonth: number;
+  totalComments: number;
+  approvedComments: number;
+  pendingComments: number;
+  newCommentsThisMonth: number;
+  totalCategories: number;
+  totalTags: number;
+  postsGrowthRate: number;
+  approvalRate: number;
+  charts: { date: string; posts: number; comments: number }[];
 }

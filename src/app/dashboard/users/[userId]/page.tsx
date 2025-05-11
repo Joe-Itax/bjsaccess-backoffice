@@ -2,9 +2,6 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useUserQuery } from "@/hooks/use-users";
-import { useCanteenStudentsByParentQuery } from "@/hooks/use-students";
-import Link from "next/link";
-import { CanteenStudent } from "@/types/student";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CircleAlertIcon, MoveLeftIcon } from "lucide-react";
@@ -20,10 +17,10 @@ export default function UserDetailsPage() {
     refetch,
   } = useUserQuery(userId as string);
 
-  const isParent = user?.role === "parent";
 
   if (isLoading) return <LoadingSkeleton />;
-  if (isError || !user)
+
+  if (isError || !user){
     return (
       <div className="flex flex-col items-center justify-center space-y-4 p-8 text-center">
         <CircleAlertIcon className="text-destructive" size={48} />
@@ -38,6 +35,7 @@ export default function UserDetailsPage() {
         </Button>
       </div>
     );
+  }
 
   return (
     <section className="p-6 max-w-4xl mx-auto space-y-6">
@@ -59,63 +57,38 @@ export default function UserDetailsPage() {
         </div>
         <div className="bg-muted/20 rounded-lg p-4">
           <h3 className="font-semibold">Rôle</h3>
-          <Badge variant={user.role === "parent" ? "default" : "secondary"}>
+          <Badge variant={user.role === "ADMIN" ? "default" : "secondary"}>
             {user.role}
           </Badge>
         </div>
+        <div className="bg-muted/20 rounded-lg p-4">
+          <h3 className="font-semibold">Nbre de Post</h3>
+          <p className="text-muted-foreground">{user.postsCount}</p>
+        </div>
       </div>
 
-      {/* Affichage spécifique pour les parents */}
-      {isParent && (
-        <div className="bg-muted/20 rounded-lg p-4">
-          <GetCanteenStudentsLinkedToAParent userId={`${userId}`} />
+      {user.postsCount > 0 && (
+        <div className="flex flex-col items-center justify-center space-y-2">
+          <h3 className="text-xl font-semibold">Les derniers posts</h3>
+          <ul className="space-y-2">
+            {user.posts.map((post) => (
+              <li key={post.id} className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-muted/20">{post.title}</div>
+                <div className="flex flex-col gap-1">
+                  
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
+
+      
     </section>
   );
 }
 
-function GetCanteenStudentsLinkedToAParent({ userId }: { userId: string }) {
-  const { data: linkedStudents, isLoading } =
-    useCanteenStudentsByParentQuery(userId);
 
-  if (isLoading) {
-    return (
-      <div>
-        <Skeleton className="h-6 w-32 rounded-md mb-2" />
-        <Skeleton className="h-4 w-full rounded-md" />
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <h3 className="text-lg font-semibold mb-2">Élèves liés</h3>
-      {linkedStudents && linkedStudents.length > 0 ? (
-        <ul className="list-disc pl-6 space-y-1">
-          {linkedStudents.map((student: CanteenStudent) => (
-            <div key={student.id}>
-              <li>
-                <Link
-                  href={`/dashboard/students/${student.id}`}
-                  className="border-b border-blue-600"
-                >
-                  {student.enrolledStudent.name}
-                </Link>{" "}
-              </li>
-              <span className="text-muted-foreground">
-                ({student.enrolledStudent.matricule} -{" "}
-                {student.enrolledStudent.class})
-              </span>
-            </div>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-muted-foreground">Aucun élève lié à ce parent.</p>
-      )}
-    </div>
-  );
-}
 
 function LoadingSkeleton() {
   return (

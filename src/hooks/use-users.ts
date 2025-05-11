@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { User } from "@/types/user";
 import { useNotification } from "./use-notification";
 import { useState } from "react";
+import { getAccessToken } from "./use-auth-user";
+import { useRouter } from "next/navigation";
 
 interface GetUsersResponse {
   totalItems: number;
@@ -11,23 +13,9 @@ interface GetUsersResponse {
   data: User[];
 }
 
+const token = getAccessToken();
+
 // Récupérer tous les users
-/*
-export function useUsersQuery() {
-  return useQuery<User[]>({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users`, {
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Erreur lors du fetch des utilisateurs");
-      const data = await res.json();
-      return data.data;
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-}
-*/
 export function useUsersQuery() {
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -44,6 +32,9 @@ export function useUsersQuery() {
           }&limit=${pagination.pageSize}`,
           {
             credentials: "include",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
         const data = await res.json();
@@ -97,6 +88,9 @@ export function useUserQuery(userId: string) {
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${userId}`,
           {
             credentials: "include",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
         if (!res.ok) throw new Error("Erreur lors du fetch de l'utilisateur");
@@ -125,6 +119,7 @@ export function useAddUserMutation() {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(user),
       });
@@ -144,36 +139,83 @@ export function useAddUserMutation() {
   });
 }
 
-// Supprimer un user
-export function useDeleteUserMutation() {
+// Désactiver un ou plusieurs utilisateurs
+export function useDeactivateUserMutation() {
   const { show } = useNotification();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (userIds: string[]) => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users`, {
-        method: "DELETE",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userIds }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/deactivate`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ userIds }),
+        }
+      );
 
       const data = await res.json();
-      if (!res.ok)
-        throw new Error(data.message || "Erreur lors de la suppression");
+      if (!res.ok) throw new Error(data.message || "Échec de la désactivation");
       return data;
     },
     onSuccess: (data) => {
-      show("success", data.message || "Utilisateur supprimé avec succès");
+      show("success", data.message || "Utilisateurs désactivés avec succès");
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
     onError: (error) => {
-      show(
-        "error",
-        error.message || "Erreur lors de la suppression de l'utilisateur"
+      show("error", error.message || "Erreur lors de la désactivation");
+    },
+  });
+}
+
+// Supprimer définitivement un utilisateur (Et toutes les data lui rattaché)
+export function useDeleteUserMutation() {
+  const { show } = useNotification();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const token = getAccessToken();
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Échec de la suppression");
+      }
+
+      return await res.json();
+    },
+    onSuccess: (data, userId) => {
+      show("success", data.message || "Utilisateur supprimé définitivement");
+
+      // Invalider les requêtes affectées
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+
+      // Si l'utilisateur supprimé est l'utilisateur courant
+      if (
+        (queryClient.getQueryData(["auth-user"]) as User | undefined)?.id ===
+        userId
+      ) {
+        router.push("/login");
+      }
+    },
+    onError: (error: Error) => {
+      show("error", error.message || "Erreur lors de la suppression");
     },
   });
 }
@@ -184,8 +226,13 @@ export function useSearchUsersMutation() {
   return useMutation({
     mutationFn: async (query: string) => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/search?query=${query}`,
-        { credentials: "include" }
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/search?q=${query}`,
+        {
+          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       const data = await res.json();
       if (!res.ok)
@@ -216,6 +263,7 @@ export function useUpdateUserMutation() {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(payload),
         }

@@ -71,7 +71,7 @@ import { useRouter } from "next/navigation";
 import {
   useUsersQuery,
   useSearchUsersMutation,
-  useDeleteUserMutation,
+  useDeactivateUserMutation,
 } from "@/hooks/use-users";
 import LoadingDataTable from "./loading";
 import ErrorThenRefresh from "./error";
@@ -126,7 +126,7 @@ const columns: ColumnDef<User>[] = [
     accessorKey: "name",
     header: "Nom",
     cell: ({ row }) => (
-      <div className={`font-medium ${!row.original.isActive && "bg-red-500"}`}>
+      <div className={`font-medium ${!row.original.isActive ? 'bg-red-400' : ''}`}>
         {row.original.name}
       </div>
     ),
@@ -151,9 +151,8 @@ const columns: ColumnDef<User>[] = [
         variant="outline"
         className={cn(
           "capitalize",
-          row.original.role === "admin" && "bg-green-400",
-          row.original.role === "agent" && "bg-blue-300",
-          row.original.role === "parent" && "bg-white/10"
+          row.original.role === "ADMIN" && "bg-green-400",
+          row.original.role === "AUTHOR" && "bg-blue-300"
         )}
       >
         {row.original.role}
@@ -337,7 +336,7 @@ export default function UsersDataTable() {
           </div>
 
           {/* Filter by role */}
-          <Popover>
+          {/* <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline">
                 <FilterIcon
@@ -379,7 +378,7 @@ export default function UsersDataTable() {
                 </div>
               </div>
             </PopoverContent>
-          </Popover>
+          </Popover> */}
         </div>
 
         {/* Column visibility */}
@@ -688,7 +687,7 @@ export default function UsersDataTable() {
 }
 
 function RowActions({ row }: { row: Row<User> }) {
-  const deleteUsersMutation = useDeleteUserMutation();
+  const deleteUsersMutation = useDeactivateUserMutation();
   const router = useRouter();
 
   const handleDeleteUsers = async () => {
@@ -723,42 +722,42 @@ function RowActions({ row }: { row: Row<User> }) {
             <span>Voir les détails</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        {row.original.isActive && (
-          <>
-            <DropdownMenuSeparator />
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <DropdownMenuItem
-                  className="text-destructive focus:text-destructive"
-                  onSelect={(e) => e.preventDefault()}
-                >
-                  <span>Supprimer l&apos;utilisateur</span>
-                </DropdownMenuItem>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Êtes-vous sûr de vouloir supprimer{" "}
-                    {/* {row.original.enrolledStudent.name}  */}
-                    de la cantine ?
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDeleteUsers}
-                    disabled={deleteUsersMutation.isPending}
-                  >
-                    {deleteUsersMutation.isPending
-                      ? "En cours..."
-                      : "Confirmer"}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </>
-        )}
+            {row.original.isActive && (
+              <>
+                <DropdownMenuSeparator />
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <DropdownMenuItem
+                      className="text-destructive focus:text-destructive"
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      <span>Supprimer l&apos;utilisateur</span>
+                    </DropdownMenuItem>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Êtes-vous sûr de vouloir supprimer{" "}
+                        {/* {row.original.enrolledStudent.name}  */}
+                        de la cantine ?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDeleteUsers}
+                        disabled={deleteUsersMutation.isPending}
+                      >
+                        {deleteUsersMutation.isPending
+                          ? "En cours..."
+                          : "Confirmer"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

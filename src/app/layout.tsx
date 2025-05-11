@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { NotificationManager } from "@/components/notification-manager";
 import { ReactQueryProvider } from "@/providers/react-query-provider";
+import { TokenRefresher } from "@/components/token-refresher";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cantine Connect",
-  description: "Solution de gestion intelligence pour les cantines scolaires",
+  title: "BJS Access",
+  description: "Back office de gestion du blog de BJS Access",
 };
 
 export default function RootLayout({
@@ -29,6 +30,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ReactQueryProvider>
           <NotificationManager />
+          <TokenRefresher />
           {children}
         </ReactQueryProvider>
       </body>
