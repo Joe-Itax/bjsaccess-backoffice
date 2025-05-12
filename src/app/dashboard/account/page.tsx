@@ -28,7 +28,7 @@ export default function ProfilePage() {
       <div className="bg-white shadow rounded-lg p-6 flex items-center space-x-6">
         <Avatar className="h-20 w-20 rounded-full">
           <AvatarImage
-            src={user.avatarUrl || "/placeholder-avatar.png"}
+            src={user.profileImage || "/placeholder-avatar.png"}
             alt={user.name}
           />
           <AvatarFallback className="rounded-full text-xl">
