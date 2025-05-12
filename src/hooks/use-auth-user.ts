@@ -27,38 +27,36 @@ export function useAuthUserQuery() {
     queryKey: ["auth-user"],
     queryFn: async () => {
       const token = getAccessToken();
+      const refreshToken = localStorage.getItem("refreshToken") || "";
       if (!token) return null;
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/check-auth`,
         {
+          method: "POST",
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
+          body: JSON.stringify({ refreshToken }),
         }
       );
 
+      const data = await res.json();
+
+      // Si un nouveau token est fourni, le stocker
+      if (data.tokenRefresh?.newAccessToken) {
+        localStorage.setItem("accessToken", data.tokenRefresh.newAccessToken);
+      }
+
       if (!res.ok) {
-        if (res.status === 401) {
-          // Token invalide ou expiré
-          // localStorage.removeItem("accessToken");
-          // localStorage.removeItem("refreshToken");
-          return null;
-        }
         throw new Error("Échec de récupération de l'utilisateur");
       }
 
-      const data = await res.json();
       show(
         "note",
         `Connecté en tant que ${data.user.name} - ${data.user.role}`
       );
-      if (data?.tokenRefresh) {
-        storeTokens({
-          ...data,
-          accessToken: data.tokenRefresh.newAccessToken,
-        });
-      }
       return data.user as User;
     },
   });
