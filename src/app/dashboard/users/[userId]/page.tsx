@@ -1,13 +1,14 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import {  useUserQuery } from "@/hooks/use-users";
+import { useUserQuery } from "@/hooks/use-users";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CircleAlertIcon, MoveLeftIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import DeleteUser from "../../components/delete-user";
 import UpdateUser from "../../components/update-user";
+import PostCard from "../../components/post-card";
 
 export default function UserDetailsPage() {
   const { userId } = useParams();
@@ -18,7 +19,6 @@ export default function UserDetailsPage() {
     isError,
     refetch,
   } = useUserQuery(userId as string);
-  
 
   if (isLoading) return <LoadingSkeleton />;
 
@@ -46,7 +46,13 @@ export default function UserDetailsPage() {
           <Button variant="ghost" onClick={() => router.back()}>
             <MoveLeftIcon />
           </Button>
-          <h2 className="text-2xl font-bold">Profil de {user.name}</h2>
+          <h2
+            className={`text-2xl font-bold px-2 ${
+              !user.isActive ? "bg-red-400 rounded-sm" : ""
+            }`}
+          >
+            Profil de {user.name}
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -66,40 +72,27 @@ export default function UserDetailsPage() {
           </div>
           <div className="bg-muted/20 rounded-lg p-4">
             <h3 className="font-semibold">Actions</h3>
-            {/* <p className="text-muted-foreground">{user.postsCount}</p> */}
             <div className="flex flex-wrap gap-2">
-              {/* <Button variant={"outline"}>
-                Edit <EditIcon color="blue" />
-              </Button> */}
               <UpdateUser user={user} />
-              <DeleteUser
-                user={user}
-                // deleteUserMutation={deleteUserMutation}
-                // handleDeleteUser={handleDeleteUser}
-                // openDialog={openDialog}
-                // setOpenDialog={setOpenDialog}
-              />
+              <DeleteUser user={user} />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col bg-blue-400 size-full">
+      <div className="flex flex-col size-full">
         <h3 className="text-xl font-semibold">
           {user.postsCount} Post{user.postsCount > 1 && "s"} publié
-          {user.postsCount > 1 && "s"}:
+          {user.postsCount > 1 && "s"}...
         </h3>
         {user.postsCount > 0 ? (
-          <ul className="">
+          <div className="grid lg:grid-cols-2 grid-cols-1 place-items-center gap-4 p-4">
             {user.posts.map((post) => (
-              <li key={post.id} className="flex gap-2">
-                <div className="h-8 w-8 rounded-md bg-muted/20">
-                  {post.title}
-                </div>
-                <div className="flex flex-col gap-1"></div>
-              </li>
+              <div key={post.id} className="size-full flex justify-center">
+                <PostCard post={post} />
+              </div>
             ))}
-          </ul>
+          </div>
         ) : (
           <div>
             <p>Aucun Post disponible</p>
