@@ -440,7 +440,7 @@ function AvatarSection() {
         <Avatar className="size-full rounded-full">
           <AvatarImage
             className="object-cover"
-            src={user?.avatarUrl || currentImage || "/placeholder-avatar.png"}
+            src={user?.profileImage || currentImage || "/placeholder-avatar.png"}
             alt={user?.name}
           />
           <AvatarFallback className="rounded-full text-xl">
