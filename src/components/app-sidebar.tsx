@@ -40,8 +40,8 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Elèves",
-      url: "/dashboard/students",
+      title: "Posts",
+      url: "/dashboard/posts",
       icon: IconUsersGroup,
     },
     {
@@ -51,12 +51,12 @@ const data = {
     },
     {
       title: "Analytics",
-      url: "/a",
+      url: "",
       icon: IconChartBar,
     },
     {
       title: "Projects",
-      url: "/p",
+      url: "",
       icon: IconFolder,
     },
   ],

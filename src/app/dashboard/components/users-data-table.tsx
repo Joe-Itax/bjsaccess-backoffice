@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -11,7 +10,6 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  PaginationState,
   Row,
   SortingState,
   useReactTable,
@@ -28,7 +26,6 @@ import {
   CircleXIcon,
   Columns3Icon,
   EllipsisIcon,
-  FilterIcon,
   ListFilterIcon,
   TrashIcon,
 } from "lucide-react";
@@ -53,11 +50,6 @@ import {
   PaginationContent,
   PaginationItem,
 } from "@/components/ui/pagination";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -126,7 +118,9 @@ const columns: ColumnDef<User>[] = [
     accessorKey: "name",
     header: "Nom",
     cell: ({ row }) => (
-      <div className={`font-medium ${!row.original.isActive ? 'bg-red-400' : ''}`}>
+      <div
+        className={`font-medium ${!row.original.isActive ? "bg-red-400" : ""}`}
+      >
         {row.original.name}
       </div>
     ),
@@ -201,6 +195,7 @@ export default function UsersDataTable() {
     } else {
       searchUsersMutation.reset();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedQuery]);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -224,6 +219,25 @@ export default function UsersDataTable() {
 
   const users = usersData?.data || [];
   const displayedUsers = searchUsersMutation?.data?.data ?? users;
+
+  const deactivateUserMutation = useDeactivateUserMutation();
+
+  const handleDeleteRows = async () => {
+    const selectedIds = table
+      .getSelectedRowModel()
+      .rows.map((row) => row.original.id);
+    if (selectedIds.length === 0) return;
+
+    try {
+      await deactivateUserMutation.mutateAsync(selectedIds);
+      table.resetRowSelection(); // Désélectionner les lignes après suppression
+    } catch (error) {
+      console.error(
+        "Erreur lors de la désactivation multiple de users.",
+        error
+      );
+    }
+  };
 
   const table = useReactTable({
     data: displayedUsers,
@@ -253,15 +267,12 @@ export default function UsersDataTable() {
     },
   });
 
-  // Filtres pour le rôle
-  const roleOptions = useMemo(() => ["admin", "parent", "agent"], []);
+  // const selectedRoles = useMemo(() => {
+  //   const filterValue = table.getColumn("role")?.getFilterValue() as string[];
+  //   return filterValue ?? [];
+  // }, [table.getColumn("role")?.getFilterValue()]);
 
-  const selectedRoles = useMemo(() => {
-    const filterValue = table.getColumn("role")?.getFilterValue() as string[];
-    return filterValue ?? [];
-  }, [table.getColumn("role")?.getFilterValue()]);
-
-  const handleFilterChange = (
+  /*const handleFilterChange = (
     columnId: string,
     checked: boolean,
     value: string
@@ -281,7 +292,7 @@ export default function UsersDataTable() {
     table
       .getColumn(columnId)
       ?.setFilterValue(newFilterValue.length ? newFilterValue : undefined);
-  };
+  };*/
 
   if (isLoading && users.length === 0) {
     return <LoadingDataTable />;
@@ -334,51 +345,6 @@ export default function UsersDataTable() {
               </button>
             )}
           </div>
-
-          {/* Filter by role */}
-          {/* <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline">
-                <FilterIcon
-                  className="-ms-1 opacity-60"
-                  size={16}
-                  aria-hidden="true"
-                />
-                Rôle
-                {selectedRoles.length > 0 && (
-                  <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
-                    {selectedRoles.length}
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto min-w-36 p-3" align="start">
-              <div className="space-y-3">
-                <div className="text-muted-foreground text-xs font-medium">
-                  Rôle
-                </div>
-                <div className="space-y-3">
-                  {roleOptions.map((role) => (
-                    <div key={role} className="flex items-center gap-2">
-                      <Checkbox
-                        id={`${id}-role-${role}`}
-                        checked={selectedRoles.includes(role)}
-                        onCheckedChange={(checked) =>
-                          handleFilterChange("role", !!checked, role)
-                        }
-                      />
-                      <label
-                        htmlFor={`${id}-role-${role}`}
-                        className="text-sm capitalize"
-                      >
-                        {role}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover> */}
         </div>
 
         {/* Column visibility */}
@@ -465,9 +431,7 @@ export default function UsersDataTable() {
                 </div>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction
-                  //   onClick={handleDeleteRows}
-                  >
+                  <AlertDialogAction onClick={handleDeleteRows}>
                     Supprimer
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -722,42 +686,42 @@ function RowActions({ row }: { row: Row<User> }) {
             <span>Voir les détails</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-            {row.original.isActive && (
-              <>
-                <DropdownMenuSeparator />
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <DropdownMenuItem
-                      className="text-destructive focus:text-destructive"
-                      onSelect={(e) => e.preventDefault()}
-                    >
-                      <span>Supprimer l&apos;utilisateur</span>
-                    </DropdownMenuItem>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Êtes-vous sûr de vouloir supprimer{" "}
-                        {/* {row.original.enrolledStudent.name}  */}
-                        de la cantine ?
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Annuler</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={handleDeleteUsers}
-                        disabled={deleteUsersMutation.isPending}
-                      >
-                        {deleteUsersMutation.isPending
-                          ? "En cours..."
-                          : "Confirmer"}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </>
-            )}
+        {row.original.isActive && (
+          <>
+            <DropdownMenuSeparator />
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onSelect={(e) => e.preventDefault()}
+                >
+                  <span>Supprimer l&apos;utilisateur</span>
+                </DropdownMenuItem>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Êtes-vous sûr de vouloir supprimer{" "}
+                    {/* {row.original.enrolledStudent.name}  */}
+                    de la cantine ?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDeleteUsers}
+                    disabled={deleteUsersMutation.isPending}
+                  >
+                    {deleteUsersMutation.isPending
+                      ? "En cours..."
+                      : "Confirmer"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
