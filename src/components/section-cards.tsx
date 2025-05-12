@@ -15,29 +15,28 @@ import { NumberTicker } from "./magicui/number-ticker";
 export function SectionCards({ stats }: { stats: DashboardStats }) {
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-      {/* Carte 1 - Revenus Totaux */}
+      {/* Carte 1 - Posts total */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Revenus totaux</CardDescription>
+          <CardDescription>Posts Total</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            <NumberTicker value={stats.totalRevenue} />
-            FC
+            <NumberTicker value={stats.totalPosts} />
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              {stats.revenueGrowthRate >= 0 ? (
+              {stats.postsGrowthRate >= 0 ? (
                 <IconTrendingUp className="text-green-500" />
               ) : (
                 <IconTrendingDown className="text-red-500" />
               )}
-              {stats.revenueGrowthRate}%
+              {stats.postsGrowthRate}%
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Tendance {stats.revenueGrowthRate >= 0 ? "en hausse" : "en baisse"}{" "}
-            ce mois
+            Tendance {stats.postsGrowthRate >= 0 ? "en hausse" : "en baisse"} ce
+            mois
           </div>
           <div className="text-muted-foreground">
             Comparaison avec le mois précédent
@@ -48,23 +47,23 @@ export function SectionCards({ stats }: { stats: DashboardStats }) {
       {/* Carte 2 - Nombre total des élèves enregistré à la cantine servis */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Elèves inscrits à la cantine</CardDescription>
+          <CardDescription>Posts de ce mois</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            <NumberTicker value={stats.totalCanteenStudents} />
+            <NumberTicker value={stats.newPostsThisMonth} />
           </CardTitle>
           <CardAction>
-            {stats.growthRate >= 0 ? (
+            {stats.approvalRate >= 0 ? (
               <div>
                 <Badge variant="outline">
                   <IconTrendingUp className="text-green-500" /> +
-                  {stats.growthRate}%
+                  {stats.approvalRate}%
                 </Badge>
               </div>
             ) : (
               <div>
                 <Badge variant="outline">
                   <IconTrendingDown className="text-red-500" />
-                  {stats.growthRate}%
+                  {stats.approvalRate}%
                 </Badge>
               </div>
             )}
@@ -78,27 +77,27 @@ export function SectionCards({ stats }: { stats: DashboardStats }) {
         </CardFooter>
       </Card>
 
-      {/* Carte 3 - Nouveaux élèves */}
+      {/* Carte 3 - Total de commentaire */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Nouveaux inscrits ce mois</CardDescription>
+          <CardDescription>Total de commentaire</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            <NumberTicker value={stats.newCanteenStudentsThisMonth} />
+            <NumberTicker value={stats.totalComments} />
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              {stats.growthRate >= 0 ? (
+              {stats.approvalRate >= 0 ? (
                 <IconTrendingUp className="text-green-500" />
               ) : (
                 <IconTrendingDown className="text-red-500" />
               )}
-              {stats.growthRate}%
+              {stats.approvalRate}%
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Progression {stats.growthRate >= 0 ? "positive" : "négative"}
+            Progression {stats.approvalRate >= 0 ? "positive" : "négative"}
           </div>
           <div className="text-muted-foreground">
             Par rapport au mois précédent
@@ -109,18 +108,18 @@ export function SectionCards({ stats }: { stats: DashboardStats }) {
       {/* Carte 4 - Taux d’abonnés actifs */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Taux d’abonnés actifs</CardDescription>
+          <CardDescription>Total catégorie</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-           <NumberTicker value={stats.abonnementRate} />%
+            <NumberTicker value={stats.totalCategories} />
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              {stats.abonnementRate >= 70 ? (
+              {stats.totalCategories >= 70 ? (
                 <IconTrendingUp className="text-green-500" />
               ) : (
                 <IconTrendingDown className="text-red-500" />
               )}
-              {stats.abonnementRate}%
+              {stats.totalCategories}%
             </Badge>
           </CardAction>
         </CardHeader>

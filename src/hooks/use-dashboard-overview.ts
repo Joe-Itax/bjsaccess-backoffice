@@ -1,5 +1,8 @@
 import { DashboardStats } from "@/types/dashboard-stat";
 import { useQuery } from "@tanstack/react-query";
+import { getAccessToken } from "./use-auth-user";
+
+const token = getAccessToken();
 
 export function useDashboardStatsQuery() {
   return useQuery<DashboardStats>({
@@ -7,9 +10,12 @@ export function useDashboardStatsQuery() {
     queryFn: async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/dashboard/overview`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/posts/admin/dashboard/stats`,
           {
             credentials: "include",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
         const data = await res.json();
