@@ -11,9 +11,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { PlusIcon } from "lucide-react";
+import { PencilLineIcon } from "lucide-react";
 
-import { useAddUserMutation } from "@/hooks/use-users";
+import { useUpdateUserMutation } from "@/hooks/use-users";
+import { User } from "@/types/user";
 
 type UserFormData = {
   name: string;
@@ -23,18 +24,24 @@ type UserFormData = {
   confirmPassword: string;
 };
 
-export default function AddUser() {
+interface UpdateUserProps {
+  user: User;
+}
+
+export default function UpdateUser({ user }: UpdateUserProps) {
   const [openDialog, setOpenDialog] = useState(false);
+  const { mutateAsync: updateUserMutation, isPending } =
+    useUpdateUserMutation();
   const [formData, setFormData] = useState<UserFormData>({
-    name: "",
-    email: "",
-    role: "AUTHOR",
+    name: user.name || "",
+    email: user.email || "",
+    role: (user.role as "ADMIN" | "AUTHOR") || "AUTHOR",
     password: "",
     confirmPassword: "",
   });
   const [errors, setErrors] = useState<Partial<UserFormData>>({});
 
-  const { mutateAsync: createUser, isPending } = useAddUserMutation();
+  //   const { mutateAsync: createUser, isPending } = useAddUserMutation();
 
   const validateForm = (): boolean => {
     const newErrors: Partial<UserFormData> = {};
@@ -64,23 +71,30 @@ export default function AddUser() {
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    const newUser = {
+    const updateUser = {
       name: formData.name,
       email: formData.email,
-      role: formData.role,
+      //   role: formData.role,
     };
 
+    if (formData.role !== user.role) {
+      Object.assign(updateUser, { role: formData.role });
+    }
+
     if (formData.password) {
-      Object.assign(newUser, { password: formData.password });
+      Object.assign(updateUser, { password: formData.password });
     }
 
     try {
-      await createUser(newUser);
+      const userUpdated = await updateUserMutation({
+        id: user.id,
+        ...updateUser,
+      });
 
       setFormData({
-        name: "",
-        email: "",
-        role: "AUTHOR",
+        name: userUpdated.user.name || "",
+        email: userUpdated.user.email || "",
+        role: (userUpdated.user.role as "ADMIN" | "AUTHOR") || "AUTHOR",
         password: "",
         confirmPassword: "",
       });
@@ -112,14 +126,18 @@ export default function AddUser() {
   return (
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogTrigger asChild>
-        <Button className="ml-auto" variant="outline">
-          <PlusIcon className="-ms-1 opacity-60" size={16} aria-hidden="true" />
-          Ajouter un utilisateur
+        <Button className="" variant="outline">
+          <PencilLineIcon
+            className="-ms-1 opacity-60"
+            size={16}
+            aria-hidden="true"
+          />
+          Edit
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="border-b px-6 py-4">
-          <DialogTitle>Créer un nouvel utilisateur</DialogTitle>
+          <DialogTitle>Mettre à jour l&apos;utilisateur</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 px-6 py-4">
           <div className="space-y-2">
@@ -209,7 +227,7 @@ export default function AddUser() {
             <Button variant="outline">Annuler</Button>
           </DialogClose>
           <Button onClick={handleSubmit} disabled={isPending}>
-            {isPending ? "Création..." : "Créer l'utilisateur"}
+            {isPending ? "Updating..." : "Update"}
           </Button>
         </div>
       </DialogContent>

@@ -89,6 +89,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import AddUser from "../users/add-user";
+import DeactiveUser from "./deactive-user";
+import ReactiveUser from "./reactive-user";
 
 const columns: ColumnDef<User>[] = [
   {
@@ -398,7 +400,7 @@ export default function UsersDataTable() {
                     size={16}
                     aria-hidden="true"
                   />
-                  Supprimer
+                  Désactiver
                   <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
                     {table.getSelectedRowModel().rows.length}
                   </span>
@@ -651,16 +653,7 @@ export default function UsersDataTable() {
 }
 
 function RowActions({ row }: { row: Row<User> }) {
-  const deleteUsersMutation = useDeactivateUserMutation();
   const router = useRouter();
-
-  const handleDeleteUsers = async () => {
-    try {
-      await deleteUsersMutation.mutateAsync([row.original.id]);
-    } catch (error) {
-      console.error("Erreur lors de la suppression des utilisateurs:", error);
-    }
-  };
 
   const openUserDetails = () => {
     router.push(`/dashboard/users/${row.original.id}`);
@@ -686,40 +679,15 @@ function RowActions({ row }: { row: Row<User> }) {
             <span>Voir les détails</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
+        <DropdownMenuSeparator />
         {row.original.isActive && (
           <>
-            <DropdownMenuSeparator />
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <DropdownMenuItem
-                  className="text-destructive focus:text-destructive"
-                  onSelect={(e) => e.preventDefault()}
-                >
-                  <span>Supprimer l&apos;utilisateur</span>
-                </DropdownMenuItem>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Êtes-vous sûr de vouloir supprimer{" "}
-                    {/* {row.original.enrolledStudent.name}  */}
-                    de la cantine ?
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDeleteUsers}
-                    disabled={deleteUsersMutation.isPending}
-                  >
-                    {deleteUsersMutation.isPending
-                      ? "En cours..."
-                      : "Confirmer"}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <DeactiveUser row={row} />
+          </>
+        )}
+        {!row.original.isActive && (
+          <>
+            <ReactiveUser row={row} />
           </>
         )}
       </DropdownMenuContent>

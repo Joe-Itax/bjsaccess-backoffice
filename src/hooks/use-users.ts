@@ -164,7 +164,8 @@ export function useDeactivateUserMutation() {
       return data;
     },
     onSuccess: (data) => {
-      show("success", data.message || "Utilisateurs désactivés avec succès");
+      show("note", data.message || "Utilisateurs désactivés avec succès");
+
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
     onError: (error) => {
@@ -205,6 +206,8 @@ export function useDeleteUserMutation() {
       // Invalider les requêtes affectées
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+
+      router.push("/dashboard/users");
 
       // Si l'utilisateur supprimé est l'utilisateur courant
       if (
@@ -271,10 +274,12 @@ export function useUpdateUserMutation() {
       if (!res.ok) throw new Error("Erreur lors de la mise à jour");
       return res.json();
     },
+
     onSuccess: (data) => {
       show("success", data.message || "Utilisateur mis à jour avec succès");
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      queryClient.invalidateQueries({ queryKey: ["auth-user"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      // queryClient.invalidateQueries({ queryKey: ["auth-user"] });
     },
     onError: (error) => {
       show(
