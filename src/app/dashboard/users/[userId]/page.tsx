@@ -40,7 +40,7 @@ export default function UserDetailsPage() {
   }
 
   return (
-    <section className="p-6 size-full max-w-[55rem] mx-auto flex flex-col gap-8">
+    <section className="smp-6 py-4 px-2 size-full container max-w-[55rem] mx-auto flex flex-col gap-8">
       <div className="w-full space-y-6">
         <div className="flex items-start gap-4">
           <Button variant="ghost" onClick={() => router.back()}>
@@ -81,12 +81,12 @@ export default function UserDetailsPage() {
       </div>
 
       <div className="flex flex-col size-full">
-        <h3 className="text-xl font-semibold">
+        <h3 className="text-xl font-semibold px-4 py-2">
           {user.postsCount} Post{user.postsCount > 1 && "s"} publié
           {user.postsCount > 1 && "s"}...
         </h3>
         {user.postsCount > 0 ? (
-          <div className="grid lg:grid-cols-2 grid-cols-1 place-items-center gap-4 p-4">
+          <div className="grid lg:grid-cols-2 grid-cols-1 place-items-center gap-4 py-4">
             {user.posts.map((post) => (
               <div key={post.id} className="size-full flex justify-center">
                 <PostCard post={post} />

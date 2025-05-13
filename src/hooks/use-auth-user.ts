@@ -1,3 +1,5 @@
+"use client";
+
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "@/hooks/use-notification";
 import { User, AuthResponse } from "@/types/user";

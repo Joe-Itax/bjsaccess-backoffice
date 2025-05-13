@@ -279,7 +279,6 @@ export function useUpdateUserMutation() {
       show("success", data.message || "Utilisateur mis à jour avec succès");
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
-      // queryClient.invalidateQueries({ queryKey: ["auth-user"] });
     },
     onError: (error) => {
       show(

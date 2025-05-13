@@ -1,36 +1,41 @@
-// export interface Post {
-// id: string;
-// title: string;
-// slug: string;
-// content: string;
-// published: boolean;
-// featuredImage: string | null;
-// authorId: string;
-// categoryId: string;
-// createdAt: string;
-// updatedAt: string;
-// }
-
 export interface Post {
   id: string;
   title: string;
   slug: string;
   content: string;
   featuredImage?: string | null;
+  published: boolean;
   createdAt: string;
-  category: {
-    id: string;
-    name: string;
-    slug: string;
-  };
+  category: Category;
   author: {
     id: string;
     name: string;
     profileImage?: string | null;
   };
-  tags?: Array<{
-    id: string;
-    name: string;
-    slug: string;
-  }>;
+  tags?: Tag[];
+  comments: Comment[];
 }
+
+export interface Comment {
+  id: string;
+  content: string;
+  postId: string;
+  visitorName: string;
+  visitorEmail: string;
+  isApproved: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Category{
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+  slug: string;
+}
+

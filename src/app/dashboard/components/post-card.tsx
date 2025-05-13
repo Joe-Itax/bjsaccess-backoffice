@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Post } from "@/types/posts";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, MoveRight, UserIcon } from "lucide-react";
+import { CalendarIcon, CheckCircleIcon, CircleOffIcon, MoveRight, UserIcon } from "lucide-react";
 
 interface PostCardProps {
   post: Post;
@@ -29,11 +29,11 @@ export default function PostCard({ post }: PostCardProps) {
 
   return (
     <div
-      className="max-w-md size-full rounded overflow-hidden shadow-lg bg-white hover:shadow-xl transition-shadow duration-300"
+      className="max-w-md size-full rounded shadow-lg bg-white hover:shadow-xl transition-shadow duration-300 relative"
       onMouseEnter={handleHover}
       onMouseLeave={handleHover}
     >
-      <div className="mb-2 absolute top-8 left-0 z-30">
+      <div className="absolute top-8 left-0 z-20">
         <span className="inline-block bg-primary px-3.5 py-2.5 text-sm font-semibold text-white">
           {post.category.name}
         </span>
@@ -61,6 +61,13 @@ export default function PostCard({ post }: PostCardProps) {
           <span className="mx-2">•</span>
           <CalendarIcon className="text-blue-500 mr-1" size={20} />
           <span>{formatDate(post.createdAt)}</span>
+          <span className="mx-2">•</span>
+          {post.published ? (
+            <CheckCircleIcon className="text-blue-500 mr-1" size={20} />
+          ) : (
+            <CircleOffIcon className="text-red-500 mr-1" size={20} />
+          )}
+          <span>Publié</span>
         </div>
 
         <h3 className="text-xl font-bold mb-2 text-gray-800 truncate">
@@ -76,7 +83,7 @@ export default function PostCard({ post }: PostCardProps) {
                 key={tag.id}
                 className="inline-block bg-blue-100 rounded-full px-3 py-1 text-xs font-semibold text-blue-800"
               >
-                {tag.name}
+                #{tag.name}
               </span>
             ))}
           </div>
@@ -86,8 +93,8 @@ export default function PostCard({ post }: PostCardProps) {
           variant="link"
           className="inline-flex items-center justify-center text-blue-500 hover:text-blue-700 font-medium uppercase"
         >
-          <Link href={`/dashboard/posts/${post.slug}`}>Lire plus</Link>
-          <MoveRight className={`block ${hoverBox ? "animate-bounce" : ""}`} />
+          <Link href={`/dashboard/posts/${post.id}`}>Lire plus</Link>
+          <MoveRight className={`${hoverBox ? "animate-bounce" : ""}`} />
         </Button>
       </div>
     </div>

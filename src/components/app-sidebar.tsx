@@ -2,14 +2,12 @@
 
 import * as React from "react";
 import {
-  IconChartBar,
+  // IconChartBar,
   IconDashboard,
-  IconFolder,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  IconListDetails,
-  IconSettings,
-  IconUsersGroup,
+  // IconFolder,
+  // IconSettings,
   IconUsers,
+  IconFileText
 } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -42,30 +40,30 @@ const data = {
     {
       title: "Posts",
       url: "/dashboard/posts",
-      icon: IconUsersGroup,
+      icon: IconFileText,
     },
     {
       title: "Users",
       url: "/dashboard/users",
       icon: IconUsers,
     },
-    {
-      title: "Analytics",
-      url: "",
-      icon: IconChartBar,
-    },
-    {
-      title: "Projects",
-      url: "",
-      icon: IconFolder,
-    },
+    // {
+    //   title: "Analytics",
+    //   url: "",
+    //   icon: IconChartBar,
+    // },
+    // {
+    //   title: "Projects",
+    //   url: "",
+    //   icon: IconFolder,
+    // },
   ],
   navSecondary: [
-    {
-      title: "Paramètres",
-      url: "/dashboard/settings",
-      icon: IconSettings,
-    },
+    // {
+    //   title: "Paramètres",
+    //   url: "",
+    //   icon: IconSettings,
+    // },
   ],
 };
 
@@ -73,7 +71,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: user } = useAuthUserQuery();
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" {...props} variant="floating">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
