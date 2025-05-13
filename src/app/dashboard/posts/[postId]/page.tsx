@@ -278,7 +278,7 @@ function LoadingSkeleton() {
   );
 }
 
-export function CommentMenu({ comment }: { comment: Comment }) {
+function CommentMenu({ comment }: { comment: Comment }) {
   const moderateCommentMutation = useModerateCommentMutation();
   const deleteCommentMutation = useDeleteCommentMutation();
 
