@@ -89,13 +89,15 @@ export default function PostCard({ post }: PostCardProps) {
           </div>
         )}
 
+<Link href={`/dashboard/posts/${post.id}`}>
         <Button
           variant="link"
           className="inline-flex items-center justify-center text-blue-500 hover:text-blue-700 font-medium uppercase"
         >
-          <Link href={`/dashboard/posts/${post.id}`}>Lire plus</Link>
+          Lire plus
           <MoveRight className={`${hoverBox ? "animate-bounce" : ""}`} />
         </Button>
+        </Link>
       </div>
     </div>
   );

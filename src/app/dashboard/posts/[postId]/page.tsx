@@ -28,7 +28,7 @@ import {
   usePublishPostMutation,
   useTagsQuery,
 } from "@/hooks/use-posts";
-import { Comment } from "@/types/posts";
+import { Comment, Tag } from "@/types/posts";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -170,13 +170,13 @@ export default function PostDetailsPage() {
               {post.category.name}
             </span>
           </div>
-          <div className="w-full h-72">
+          <div className="w-full h-72 overflow-hidden">
             <Image
               src={`${post.featuredImage}`}
               width={800}
               height={400}
               alt={post.title}
-              className="size-full object-cover"
+              className="size-full object-fill"
             />
           </div>
 
@@ -184,34 +184,18 @@ export default function PostDetailsPage() {
             <h2 className="text-xl font-bold">{post.title}</h2>
           </div>
           <div className="w-full">
-            <p>{post.content}</p>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum,
-              nulla, facilis sapiente sed fugiat mollitia, animi illum eius sit
-              repellendus maiores perferendis. Quasi asperiores adipisci
-              eveniet, ab consequatur praesentium nemo.
-            </p>
-            <p>
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nemo
-              alias, iste quibusdam optio suscipit assumenda! In modi itaque
-              excepturi saepe. Qui dignissimos veritatis dolorum in, ad nostrum
-              illo eaque voluptas. Blanditiis fuga corrupti quas eligendi
-              voluptatem maiores iusto quisquam enim cumque aperiam, animi
-              exercitationem, dicta ut magni nam. Dicta commodi quaerat fugiat
-              quisquam obcaecati harum molestias cupiditate ipsum doloribus
-              sint. A, odio rem? Eos veritatis totam, explicabo quis repudiandae
-              atque corporis maxime, mollitia, ab magni eius quae? Neque dolore
-              repellat blanditiis, doloremque culpa, labore, libero ipsum odit
-              similique repellendus nisi! Est repellat deserunt ea ex tenetur
-              unde eaque molestias et asperiores, fugit voluptatibus
-              exercitationem fugiat amet perspiciatis. Officia maiores unde
-              adipisci dolorum natus fuga! Obcaecati omnis optio dicta
-              voluptatibus nihil? Facilis ipsa maiores ut laboriosam excepturi
-              maxime amet? Ratione cum voluptates cumque quasi officia quibusdam
-              doloribus, consequuntur libero corrupti quaerat! Aperiam adipisci
-              vero accusamus sapiente dolorem quos perspiciatis reprehenderit
-              laudantium?
-            </p>
+            <p className="whitespace-pre-line">{post.content}</p>
+          </div>
+          <div className="w-full flex">
+            {post.tags.map((tag: Tag) => (
+              <span
+                key={tag.id}
+                className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
+              >
+                #{tag.name}
+                
+              </span>
+            ))}
           </div>
         </div>
 
