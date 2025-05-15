@@ -23,7 +23,7 @@ export default function LoginPage() {
             <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <LinkIcon className="size-4" />
             </div>
-            Cantine Connect
+            BJS Access
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">

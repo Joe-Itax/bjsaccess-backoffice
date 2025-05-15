@@ -7,7 +7,9 @@ import {
   // IconFolder,
   // IconSettings,
   IconUsers,
-  IconFileText
+  IconFileText,
+  IconFolder,
+  IconHash,
 } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -47,16 +49,16 @@ const data = {
       url: "/dashboard/users",
       icon: IconUsers,
     },
-    // {
-    //   title: "Analytics",
-    //   url: "",
-    //   icon: IconChartBar,
-    // },
-    // {
-    //   title: "Projects",
-    //   url: "",
-    //   icon: IconFolder,
-    // },
+    {
+      title: "Tag",
+      url: "/dashboard/tags",
+      icon: IconHash,
+    },
+    {
+      title: "Categories",
+      url: "/dashboard/categories",
+      icon: IconFolder,
+    },
   ],
   navSecondary: [
     // {
@@ -81,7 +83,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <div>
                 <LinkIcon className="!size-6" />
-                <span className="text-base font-semibold">Cantine Connect</span>
+                <span className="text-base font-semibold">BJS Access</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

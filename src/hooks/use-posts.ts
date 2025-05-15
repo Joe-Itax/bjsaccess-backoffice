@@ -432,6 +432,42 @@ export function useCreateCategoryMutation() {
   });
 }
 
+export function useDeleteCategoryMutation() {
+  const { show } = useNotification();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ categoryId }: { categoryId: string }) => {
+      const token = getAccessToken();
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/posts/admin/categories/${categoryId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Échec de la suppression");
+      }
+
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      show("success", data.message || "Categorie supprimé");
+
+      // Invalider les requêtes affectées
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+    onError: (error: Error) => {
+      show("error", error.message || "Erreur lors de la suppression");
+    },
+  });
+}
+
 // Tags
 export function useTagsQuery() {
   const { show } = useNotification();
@@ -487,10 +523,46 @@ export function useCreateTagMutation() {
     },
     onSuccess: (data) => {
       show("success", data.message || "Tag créer avec succès");
-      queryClient.invalidateQueries({ queryKey: ["tag"] });
+      queryClient.invalidateQueries({ queryKey: ["tags"] });
     },
     onError: (error) => {
       show("error", error.message || "Erreur lors de la création du Tag");
+    },
+  });
+}
+
+export function useDeleteTagMutation() {
+  const { show } = useNotification();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ tagId }: { tagId: string }) => {
+      const token = getAccessToken();
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/posts/admin/tags/${tagId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Échec de la suppression");
+      }
+
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      show("success", data.message || "Tag supprimé");
+
+      // Invalider les requêtes affectées
+      queryClient.invalidateQueries({ queryKey: ["tags"] });
+    },
+    onError: (error: Error) => {
+      show("error", error.message || "Erreur lors de la suppression");
     },
   });
 }
